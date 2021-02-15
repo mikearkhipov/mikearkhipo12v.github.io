@@ -56,7 +56,8 @@
         } 
         #scoreboard {
             display: none;
-            position: fixed;
+            position: absolute;
+			left: 35px;
         }
 
         .icons-author {
@@ -99,6 +100,7 @@
     </div>
     
     <div id="scoreboard">Рыбы съедено: <span id="score">0</span></div>
+    <div id="timer"></div>
     <canvas id="root"></canvas>
 
     <script>
@@ -124,7 +126,7 @@
 
         // Травка под ногами
         var field = {
-            height: 20,
+            height: 50,
         }
 
         ctx.fillStyle = 'green';
@@ -154,9 +156,13 @@
         // Вражина
         var enemy = {
             position_x: 300,
-            height: 60,
-            width: 60,
+            height: 50,
+            width: 50,
         }
+		
+		var timerElement = document.getElementById("timer");
+		var remainingTime = 100;
+		var timerInterval;
 
         function gameOver() {
             gameover = true;
@@ -200,17 +206,35 @@
             ctx.drawImage(hero.speed > 0 ? kitty : kittyback, hero.position_x, canvas.height - hero.height - hero.position_y - field.height, hero.width, hero.height);
             ctx.drawImage(hero.speed > 0 ? dog : dogback, enemy.position_x, canvas.height - enemy.height - field.height, enemy.width, enemy.height);
         }
-
+		
+		function setTimer() {
+            var interval = setInterval(function() {
+                timerElement.innerText = remainingTime;
+                remainingTime--;
+                if(remainingTime === 0) {
+                    clearInterval(interval);
+                    gameOver();
+                    remainingTime = 10;
+                }
+            }, 180);
+		}		
+		
         function start() {
+		    
             gameStarted = true;
+			
             gameover = false;
+			
             restart.style.display = "none";
             intro.style.display = "none";
             scoreboard.style.display = "block";
             points = 0;
             hero.position_x = 0;
             hero.speed = 3;
+			
             gameLoop();
+			setTimer();
+			
         }
 
 
